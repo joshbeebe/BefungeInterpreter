@@ -114,7 +114,21 @@ bool Interpreter::interpretCommand() {
 	if (curr == '"') {           //Switch to/from string mode
 		pushAlpha = !pushAlpha;
 	} else if (pushAlpha) {      //If " has been encountered
-		theStack.push(curr);
+        if (curr == '\\') {
+            char nxt = nextChar();
+            switch (nxt) {
+            case 'n':
+                theStack.push('\n');
+                break;
+            case '\\':
+                theStack.push('\\');
+                break;
+            default:
+                break;
+            }
+        } else {
+            theStack.push(curr);
+        }
 	} else if (isdigit(curr)) {  //push digit
 		theStack.push(curr - '0');
 	} else {                     //Everything else
@@ -239,14 +253,14 @@ int main() {
 
 	Interpreter befunge;
 
-	befunge.getCode("test2.txt");
+	befunge.getCode("test.txt");
 	befunge.firstCmd();
 
 	while (befunge.interpretCommand()) {
 		befunge.nextChar();
 	}
 
-	cout << endl << endl;
+	//cout << endl << endl;
 
 	system("pause");
 	return 0;
